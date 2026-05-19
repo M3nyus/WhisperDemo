@@ -1,0 +1,19 @@
+server:
+  replicaCount: 1
+  image:
+    repository: menyus/zv-whisper-server
+    tag: latest
+  service:
+    port: 8080
+
+client:
+  replicaCount: 3
+  image:
+    repository: push menyus/zv-whisper-client
+    tag: latest
+
+main:
+  replicaCount: 2
+  image:
+    repository: push menyus/zv-whisper-main
+    tag: latest

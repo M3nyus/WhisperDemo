@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-client
+  labels:
+    app: {{ .Release.Name }}-client
+spec:
+  replicas: {{ .Values.client.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-client
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-client
+    spec:
+      containers:
+      - name: client
+        image: "{{ .Values.client.image.repository }}:{{ .Values.client.image.tag }}"
+        env:
+        - name: REDIS_URL
+          value: "redis://zv-redis:6379"
+        - name: SERVER_URL
+          value: "http://{{ .Release.Name }}-server:{{ .Values.server.service.port }}"
