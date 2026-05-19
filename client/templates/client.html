@@ -125,7 +125,7 @@ socket.on("worker_list", (data) => {
     if (!ownWorkerExists) {
         list.innerHTML = `
             <li class="list-group-item bg-black text-danger">
-                Ez a bot már nem fut: ${selectedRoomId}
+                This bot is not running: ${selectedRoomId}
             </li>
         `;
         return;
