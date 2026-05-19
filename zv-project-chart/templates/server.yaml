@@ -18,20 +18,30 @@ spec:
       - name: server
         image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}"
         ports:
-        - containerPort: {{ .Values.server.service.port }}
+        - containerPort: {{ .Values.server.service.internalPort }}
         env:
-        - name: REDIS_URL
-          value: "redis://zv-redis:6379"
+        - name: SERVER_HOST
+          value: "0.0.0.0"
+        - name: SERVER_PORT
+          value: "{{ .Values.server.service.internalPort }}"
+        - name: REDIS_HOST
+          value: "zv-redis"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: SERVER_LOG
+          value: "/tmp/server.log"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Release.Name }}-server
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
-    - port: {{ .Values.server.service.port }}
-      targetPort: {{ .Values.server.service.port }}
+    - port: {{ .Values.server.service.externalPort }}
+      targetPort: {{ .Values.server.service.internalPort }}
+      nodePort: {{ .Values.server.service.nodePort }}
       protocol: TCP
+      name: http
   selector:
     app: {{ .Release.Name }}-server

@@ -4,7 +4,9 @@ server:
     repository: menyus/zv-whisper-server
     tag: latest
   service:
-    port: 8080
+    internalPort: 3000
+    externalPort: 8080
+    nodePort: 32080
 
 client:
   replicaCount: 3
