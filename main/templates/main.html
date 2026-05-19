@@ -135,16 +135,11 @@
 </div>
 
 <script>
-let serverIp = window.location.hostname;
-
-if (serverIp.startsWith("10.")) {
-    serverIp = "10.1.0.26";
-}
-
-const socket = io(`http://${serverIp}:3000`);
+const socket = io("http://10.1.0.26:3000");
 
 socket.on("connect", () => {
     socket.emit("get_worker_list");
+    console.log("Connected to pod.");
     refreshChunkCount();
 });
 
