@@ -136,7 +136,7 @@
 </div>
 
 <script>
-const socket = io("http://zv-project-server:3000");
+const socket = io("http://<NODE_IP>:30080");
 
 socket.on("connect", () => {
     socket.emit("get_worker_list");
