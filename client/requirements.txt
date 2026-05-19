@@ -8,3 +8,5 @@ numpy~=2.2.6
 openai-whisper==20250625
 ffmpeg-python~=0.2.0
 pymediasoup~=1.2.1
+python-dotenv~=1.2.2
+scipy~=1.15.3

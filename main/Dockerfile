@@ -6,7 +6,6 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
-    ffmpeg \
     build-essential \
     gcc \
     git \
@@ -25,4 +24,4 @@ COPY . .
 EXPOSE 5000
 
 #CMD ["sleep", "3600"]
-CMD ["python3", "index.py"]
+CMD ["python3", "main.py"]
