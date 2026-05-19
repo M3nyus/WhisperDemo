@@ -135,7 +135,13 @@
 </div>
 
 <script>
-const socket = io("http://localhost:3000");
+let serverIp = window.location.hostname;
+
+if (serverIp.startsWith("10.")) {
+    serverIp = "10.1.0.26";
+}
+
+const socket = io(`http://${serverIp}:3000`);
 
 socket.on("connect", () => {
     socket.emit("get_worker_list");
