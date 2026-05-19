@@ -6,6 +6,7 @@ metadata:
     app: {{ .Release.Name }}-server
 spec:
   replicas: {{ .Values.server.replicaCount }}
+  revisionHistoryLimit: 1
   selector:
     matchLabels:
       app: {{ .Release.Name }}-server
@@ -38,7 +39,7 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: {{ .Values.server.service.externalPort }}
+    - port: 3000
       targetPort: {{ .Values.server.service.internalPort }}
       nodePort: {{ .Values.server.service.nodePort }}
       protocol: TCP
