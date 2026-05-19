@@ -25,6 +25,9 @@ load_dotenv()
 #IF EXIST SERVER_URL USE THAT, OR LOCALHOST
 SERVER_URL = os.getenv("SERVER_URL")
 
+if not SERVER_URL:
+    SERVER_URL = "http://zv-project-server:3000"
+
 #LOGGER
 LOGFILE = os.getenv("MAIN_LOG")
 log = Logger(LOGFILE)
