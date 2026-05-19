@@ -22,6 +22,9 @@ app.logger.setLevel(logging.INFO)
 #LOAD .ENV
 load_dotenv()
 
+#IF EXIST SERVER_URL USE THAT, OR LOCALHOST
+SERVER_URL = os.getenv("SERVER_URL", "http://localhost:3000")
+
 #LOGGER
 LOGFILE = os.getenv("MAIN_LOG")
 log = Logger(LOGFILE)
@@ -37,7 +40,7 @@ def index():
 @app.route('/start/<string:room_id>', methods=['POST', 'GET'])
 def start_demo(room_id: str):
     try:
-        response = requests.post(f"http://localhost:3000/api/start/{room_id}")
+        response = requests.post(f"{SERVER_URL}/api/start/{room_id}")
         data = response.json()
 
         return jsonify(data), response.status_code
@@ -52,7 +55,7 @@ def start_demo(room_id: str):
 @app.route('/command/stop/<string:room_id>', methods=['POST', 'GET'])
 def stop_bot(room_id):
     try:
-        response = requests.post(f"http://localhost:3000/api/stop/{room_id}")
+        response = requests.post(f"{SERVER_URL}/api/stop/{room_id}")
         data = response.json()
 
         return jsonify(data), response.status_code

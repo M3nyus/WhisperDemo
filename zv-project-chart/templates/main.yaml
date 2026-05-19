@@ -22,7 +22,9 @@ spec:
         - |
           pip install requests && python /app/main.py
         env:
-        - name: REDIS_URL
-          value: "redis://zv-redis:6379"
+        - name: REDIS_HOST
+          value: "zv-redis"
+        - name: REDIS_PORT
+          value: "6379"
         - name: SERVER_URL
-          value: "http://{{ .Release.Name }}-server:{{ .Values.server.service.port }}"
+          value: "http://zv-project-server:8080"
