@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Client page</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/style.css">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- SocketIO -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+
+<body>
+
+<div class="container py-5">
+    <div class="glass-card text-blue shadow-lg border-0 rounded-4">
+        <div class="card-body p-4">
+
+            <h1 id="clientTitle" class="mb-4">Client page</h1>
+
+            <div class="mb-3">
+                <label for="clientRoomId" class="form-label">Room name</label>
+                <input type="text"
+                       id="clientRoomId"
+                       class="form-control"
+                       readonly>
+            </div>
+
+            <div class="mb-4">
+                <label for="extraInput" class="form-label">Chunk number</label>
+                <input type="text"
+                       id="extraInput"
+                       class="form-control"
+                       placeholder="Chunk number">
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <button class="btn btn-danger" onclick="stopRoom()">
+                    STOP
+                </button>
+
+                <button class="btn btn-primary" onclick="testTranscribe()">
+                    TRANSCRIBE TEST
+                </button>
+
+            </div>
+
+            <div class="mb-4">
+                <h5>Running Bots</h5>
+                <ul id="workerList" class="list-group">
+                    <li class="list-group-item bg-black text-white">No Running Bots</li>
+                </ul>
+            </div>
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <h5 class="mb-2">Felirat</h5>
+
+                    <div id="subtitleBox"
+                         class="bg-black text-white p-3 rounded"
+                         style="height:300px; overflow:auto;">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+const socket = io();
+
+let selectedRoomId = decodeURIComponent(
+    window.location.pathname.split("/").filter(Boolean).pop()
+);
+
+window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("clientRoomId").value = selectedRoomId;
+    document.getElementById("clientTitle").innerText = "Client page - " + selectedRoomId;
+});
+
+socket.on("connect", () => {
+    log("connected");
+    socket.emit("get_worker_list");
+});
+
+
+socket.on("subtitle", (data) => {
+    if (data.roomId !== selectedRoomId) return;
+
+    const box = document.getElementById("subtitleBox");
+
+    box.innerHTML += `
+        <div>${data.text}</div>
+    `;
+
+    box.scrollTop = box.scrollHeight;
+});
+
+socket.on("worker_list", (data) => {
+    const list = document.getElementById("workerList");
+    list.innerHTML = "";
+
+    if (!data.workers || data.workers.length === 0) {
+        list.innerHTML = `
+            <li class="list-group-item bg-black text-white">
+                No Running Bots
+            </li>
+        `;
+        return;
+    }
+
+    const ownWorkerExists = data.workers.includes(selectedRoomId);
+
+    if (!ownWorkerExists) {
+        list.innerHTML = `
+            <li class="list-group-item bg-black text-danger">
+                Ez a bot már nem fut: ${selectedRoomId}
+            </li>
+        `;
+        return;
+    }
+
+    list.innerHTML = `
+        <li class="list-group-item bg-black text-success">
+            ${selectedRoomId}
+        </li>
+    `;
+});
+
+function stopRoom() {
+    socket.emit("command", {
+        action: "stop_room",
+        roomId: selectedRoomId
+    });
+}
+
+function testTranscribe() {
+    const chunkNumber = document.getElementById("extraInput").value;
+
+    socket.emit("command", {
+        action: "transcribe_test",
+        roomId: selectedRoomId,
+        chunkNumber: chunkNumber
+    });
+}
+</script>
+
+</body>
+</html>
