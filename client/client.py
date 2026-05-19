@@ -14,7 +14,7 @@ sio = socketio.AsyncClient(reconnection=True, reconnection_attempts=0, reconnect
 
 #LOAD .ENV
 load_dotenv()
-SERVER_URL = os.getenv("SERVER_URL", "http://localhost:3000")
+SERVER_URL = os.getenv("SERVER_URL")
 
 #LOGGER
 LOGFILE = os.getenv("CLIENT_LOG")
