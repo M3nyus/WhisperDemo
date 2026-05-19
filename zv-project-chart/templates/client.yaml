@@ -6,6 +6,7 @@ metadata:
     app: {{ .Release.Name }}-client
 spec:
   replicas: {{ .Values.client.replicaCount }}
+  revisionHistoryLimit: 1
   selector:
     matchLabels:
       app: {{ .Release.Name }}-client
