@@ -18,7 +18,11 @@ spec:
       - name: client
         image: "{{ .Values.client.image.repository }}:{{ .Values.client.image.tag }}"
         env:
-        - name: REDIS_URL
-          value: "redis://zv-redis:6379"
-        - name: SERVER_URL
-          value: "http://{{ .Release.Name }}-server:{{ .Values.server.service.port }}"
+        - name: REDIS_HOST
+          value: "zv-redis"
+        - name: REDIS_PORT
+          value: "6379"
+
+      - name: alpine-socat
+        image: alpine/socat:latest
+        args: ["tcp-listen:3000,fork,reuseaddr", "tcp-connect:zv-project-server:8080"]
