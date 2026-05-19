@@ -9,11 +9,11 @@ server:
 client:
   replicaCount: 3
   image:
-    repository: push menyus/zv-whisper-client
+    repository: menyus/zv-whisper-client
     tag: latest
 
 main:
   replicaCount: 2
   image:
-    repository: push menyus/zv-whisper-main
+    repository: menyus/zv-whisper-main
     tag: latest
