@@ -17,6 +17,10 @@ spec:
       containers:
       - name: main
         image: "{{ .Values.main.image.repository }}:{{ .Values.main.image.tag }}"
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          pip install requests && python /app/main.py
         env:
         - name: REDIS_URL
           value: "redis://zv-redis:6379"
