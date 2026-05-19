@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Server page</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/style.css">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- SocketIO -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+
+<body>
+
+<div class="container py-5">
+
+    <div class="glass-card text-blue shadow-lg border-0 rounded-4">
+        <div class="card-body p-4">
+
+            <h1 class="mb-4">Server page</h1>
+
+            <!-- ROOM ID -->
+            <div class="mb-3">
+                <label for="roomId" class="form-label">Room ID</label>
+                <input type="text"
+                       id="roomId"
+                       class="form-control"
+                       placeholder="Room ID">
+            </div>
+
+            <!-- CHUNKS -->
+            <div class="mb-4">
+                <label for="extraInput" class="form-label">Chunk number</label>
+                <input type="text"
+                       id="extraInput"
+                       class="form-control"
+                       placeholder="Chunk number">
+            </div>
+
+            <!-- BUTTONS -->
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <button class="btn btn-success" onclick="startRoom()">
+                    START
+                </button>
+
+                <button class="btn btn-danger" onclick="stopRoom()">
+                    STOP
+                </button>
+
+                <button class="btn btn-primary" onclick="testTranscribe()">
+                    TRANSCRIBE TEST
+                </button>
+            </div>
+
+            <!-- LISTS -->
+            <div class="mb-4">
+                <h5>Aviable Worker-s</h5>
+                <ul id="aviableWorkerList" class="list-group">
+                    <li class="list-group-item bg-black text-white">No aviable worker</li>
+                </ul>
+            </div>
+
+            <div class="mb-4">
+                <h5>Running Worker-s</h5>
+                <ul id="runningWorkerList" class="list-group">
+                    <li class="list-group-item bg-black text-white">No Running worker</li>
+                </ul>
+            </div>
+
+            <!-- LOG + SUBTITLE -->
+            <div class="row g-3">
+
+                <!-- LOG -->
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0">Log</h5>
+
+                        <button class="btn btn-sm btn-outline-dark" onclick="clearLog()">
+                            Clear log
+                        </button>
+                    </div>
+
+                    <div id="log"
+                         class="p-3 rounded"
+                         style="height:250px; overflow:auto;">
+                    </div>
+                </div>
+
+                <!-- SUBTITLE -->
+                <div class="col-md-6">
+                    <h5 class="mb-2">Subtitle</h5>
+
+                    <div id="subtitleBox"
+                         class="rounded"
+                         style="height:300px; overflow:auto;">
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+const socket = io();
+
+const log = (msg) => {
+    document.getElementById("log").innerHTML += `
+        <div>${msg}</div>
+    `;
+
+    const logBox = document.getElementById("log");
+    logBox.scrollTop = logBox.scrollHeight;
+};
+
+socket.on("connect", () => {
+
+    log("connected");
+
+    socket.emit("get_worker_list");
+
+    Swal.fire({
+        icon: 'success',
+        title: 'Connected',
+        text: 'Socket connected to server.',
+        timer: 1200,
+        showConfirmButton: false
+    });
+});
+
+socket.on("disconnect", () => {
+
+    Swal.fire({
+        icon: 'warning',
+        title: 'Disconnected',
+        text: 'Lost connection to server.'
+    });
+});
+
+socket.on("log", (data) => {
+    log("[SERVER] " + data.message);
+});
+
+socket.on("subtitle", (data) => {
+    const box = document.getElementById("subtitleBox");
+
+    box.innerHTML += `
+        <div class="subtitle-item">
+            ${data.roomId} - ${data.chunkNumber}: ${data.text}
+        </div>
+    `;
+
+    box.scrollTop = box.scrollHeight;
+});
+
+socket.on("worker_list", (data) => {
+    const list = document.getElementById("runningWorkerList");
+    list.innerHTML = "";
+
+    if (!data.workers || data.workers.length === 0) {
+        list.innerHTML = `
+            <li class="list-group-item bg-black text-white">
+                Nincs futó worker
+            </li>
+        `;
+        return;
+    }
+
+    data.workers.forEach((worker) => {
+        list.innerHTML += `
+            <li class="list-group-item bg-black text-success d-flex justify-content-between align-items-center">
+                <span>${worker}</span>
+
+                <a class="btn btn-sm btn-primary"
+                   href="/client/${worker}"
+                   target="_blank">
+                    Open client
+                </a>
+            </li>
+        `;
+    });
+});
+
+socket.on("available_worker_list", (data) => {
+    const list = document.getElementById("aviableWorkerList");
+    list.innerHTML = "";
+
+    if (!data.workers || data.workers.length === 0) {
+        list.innerHTML = `
+            <li class="list-group-item bg-black text-white">
+                No aviable worker
+            </li>
+        `;
+        return;
+    }
+
+    data.workers.forEach((worker) => {
+        list.innerHTML += `
+            <li class="list-group-item bg-black text-info d-flex justify-content-between align-items-center">
+                <span>${worker.workerId}</span>
+
+                <button class="btn btn-sm btn-danger"
+                        onclick="shutdownWorker('${worker.sid}')">
+                    Stop worker
+                </button>
+            </li>
+        `;
+    });
+});
+
+function startRoom() {
+    const roomId = document.getElementById("roomId").value.trim();
+
+    if (!roomId) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Missing room',
+            text: 'Write a Room ID.'
+        });
+
+        return;
+    }
+
+    socket.emit("command", {
+        action: "start_room",
+        roomId: roomId
+    });
+
+    Swal.fire({
+        icon: 'success',
+        title: 'Room started',
+        text: `Room: ${roomId}`,
+        timer: 1500,
+        showConfirmButton: false
+    });
+}
+
+function stopRoom() {
+    const roomId = document.getElementById("roomId").value.trim();
+
+    if (!roomId) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Missing room',
+            text: 'Write a Room ID.'
+        });
+
+        return;
+    }
+
+    Swal.fire({
+        title: 'Stop room?',
+        text: roomId,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Stop room'
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+
+            socket.emit("command", {
+                action: "stop_room",
+                roomId: roomId
+            });
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Stopped',
+                text: `Room stopped: ${roomId}`,
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+    });
+}
+
+function testTranscribe() {
+    const roomId = document.getElementById("roomId").value.trim();
+    const chunkNumber = document.getElementById("extraInput").value.trim();
+
+    if (!roomId) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Missing room',
+            text: 'Write a Room ID.'
+        });
+
+        return;
+    }
+
+    if (!chunkNumber) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Missing chunk',
+            text: 'Write a Chunk number.'
+        });
+
+        return;
+    }
+
+    socket.emit("command", {
+        action: "transcribe_test",
+        roomId: roomId,
+        chunkNumber: chunkNumber
+    });
+
+    Swal.fire({
+        icon: 'info',
+        title: 'Transcribing',
+        text: `Chunk ${chunkNumber} sent to worker.`,
+        timer: 1800,
+        showConfirmButton: false
+    });
+}
+
+function shutdownWorker(workerSid) {
+
+    Swal.fire({
+        title: 'Stop worker?',
+        text: "This worker will stop.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes'
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+
+            socket.emit("command", {
+                action: "shutdown_worker",
+                workerSid: workerSid
+            });
+
+            Swal.fire(
+                'Stopped!',
+                'Worker shutdown command sent.',
+                'success'
+            );
+        }
+    });
+}
+
+function clearLog() {
+
+    Swal.fire({
+        title: 'Clear log?',
+        text: 'All log messages will be deleted.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+
+            document.getElementById("log").innerHTML = "";
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Cleared',
+                text: 'Log cleared.',
+                timer: 1200,
+                showConfirmButton: false
+            });
+        }
+    });
+}
+
+</script>
+
+</body>
+</html>
