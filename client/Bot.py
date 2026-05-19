@@ -41,6 +41,8 @@ T = TypeVar("T")
 
 #LOAD .ENV
 load_dotenv()
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PORT = os.getenv("REDIS_PORT")
 
 #LOGGER
 LOGFILE = os.getenv("BOT_LOG")
@@ -115,7 +117,7 @@ class Demo:
         self._tracks = []
 
         # Redis
-        self.redis = redis.Redis(host='127.0.0.1', port=6379, db=0)
+        self.redis = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
 
         audioTrack = AudioStreamTrack()
         videoTrack = VideoStreamTrack()
