@@ -14,6 +14,7 @@ sio = socketio.AsyncClient(reconnection=True, reconnection_attempts=0, reconnect
 
 #LOAD .ENV
 load_dotenv()
+SERVER_URL = os.getenv("SERVER_URL", "http://localhost:3000")
 
 #LOGGER
 LOGFILE = os.getenv("CLIENT_LOG")
@@ -133,7 +134,7 @@ async def worker_list():
 
 #RUNNER
 async def main():
-    await sio.connect("http://localhost:3000")
+    await sio.connect(SERVER_URL)
     await sio.wait()
 
 if __name__ == "__main__":
