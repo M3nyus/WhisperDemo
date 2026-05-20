@@ -37,12 +37,11 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-server
 spec:
-  type: NodePort
-  ports:
-    - port: 3000
-      targetPort: {{ .Values.server.service.internalPort }}
-      nodePort: {{ .Values.server.service.nodePort }}
-      protocol: TCP
-      name: http
+  type: ClusterIP
   selector:
     app: {{ .Release.Name }}-server
+  ports:
+    - name: http
+      port: 3000
+      targetPort: {{ .Values.server.service.internalPort }}
+      protocol: TCP

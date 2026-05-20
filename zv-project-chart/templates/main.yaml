@@ -28,4 +28,4 @@ spec:
         - name: REDIS_PORT
           value: "6379"
         - name: SERVER_URL
-          value: "http://zv-project-server:3000"
+          value: "http://{{ .Release.Name }}-server:3000"

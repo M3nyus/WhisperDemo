@@ -18,7 +18,6 @@ spec:
       containers:
       - name: client
         image: "{{ .Values.client.image.repository }}:{{ .Values.client.image.tag }}"
-        # --- EZT A KÉT SORT ADD HOZZÁ A KONTÉNERHEZ ---
         command: ["/bin/sh", "-c"]
         args:
           - |
