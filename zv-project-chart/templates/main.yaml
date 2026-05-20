@@ -20,12 +20,16 @@ spec:
         image: "{{ .Values.main.image.repository }}:{{ .Values.main.image.tag }}"
         command: ["/bin/sh", "-c"]
         args:
-        - |
-          pip install requests && python /app/main.py
+            - |
+              sed -i 's|await sio.connect("http://localhost:3000")|await sio.connect(os.getenv("SERVER_URL", "http://zv-project-server:3000"))|g' /app/main.py 2>/dev/null || sed -i 's|"http://localhost:3000"|os.getenv("SERVER_URL")|g' /app/main.py
+
+              pip install requests
+
+              python /app/main.py
         env:
         - name: REDIS_HOST
           value: "zv-redis"
         - name: REDIS_PORT
           value: "6379"
         - name: SERVER_URL
-          value: "http://{{ .Release.Name }}-server:3000"
+          value: "http://zv-project-server:3000"

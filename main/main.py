@@ -22,7 +22,7 @@ app.logger.setLevel(logging.INFO)
 #LOAD .ENV
 load_dotenv()
 
-SERVER_URL = os.getenv("SERVER_URL", "http://zv-project-server:3000")
+SERVER_URL = os.getenv("SERVER_URL")
 print(SERVER_URL)
 
 #LOGGER
@@ -70,7 +70,7 @@ def stop_bot(room_id):
 def get_status():
     return jsonify({
         "status": "main_running",
-        "server": "http://localhost:3000"
+        "server": f"{SERVER_URL}"
     })
 
 if __name__ == '__main__':
