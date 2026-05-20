@@ -136,9 +136,8 @@
 </div>
 
 <script>
-// Ezt használd a localhost:3000 helyett:
-const socket = io(window.location.origin, {
-    path: '/socket.io'
+const socket = io({
+  path: '/socket.io'
 });
 
 socket.on("connect", () => {
