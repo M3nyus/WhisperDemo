@@ -23,8 +23,6 @@ spec:
             - |
               sed -i 's|await sio.connect("http://localhost:3000")|await sio.connect(os.getenv("SERVER_URL", "http://zv-project-server:3000"))|g' /app/main.py 2>/dev/null || sed -i 's|"http://localhost:3000"|os.getenv("SERVER_URL")|g' /app/main.py
 
-              grep -n "SERVER_URL\|localhost:3000\|zv-project-server" /app/main.py
-
               pip install requests
 
               python /app/main.py
