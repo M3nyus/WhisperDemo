@@ -23,7 +23,7 @@ SOURCE_SAMPLE_RATE = 48000  # Default for WebRTC (aiortc/browser)
 TARGET_SAMPLE_RATE = 16000  # Required by Whisper
 REDIS_HOST = os.getenv("REDIS_HOST")
 REDIS_PORT = os.getenv("REDIS_PORT")
-WHISPER_MODEL = os.getenv("WHISPER_MODEL")
+WHISPER_MODEL = "turbo"
 
 
 def transcribe_from_redis_stream(room_id, chunk_index):

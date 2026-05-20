@@ -136,10 +136,7 @@
 </div>
 
 <script>
-const socket = io({
-  transports: ['websocket'],
-  path: '/socket.io'
-});
+const socket = io("http://zv-project-server:3000");
 
 socket.on("connect", () => {
     socket.emit("get_worker_list");
