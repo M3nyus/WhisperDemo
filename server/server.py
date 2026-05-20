@@ -340,8 +340,8 @@ async def start():
     await runner.setup()
     site = web.TCPSite(runner, SERVER_HOST, SERVER_PORT)
 
-    print("Server running on http://localhost:3000/")
-    log.Logging("Server running on http://localhost:3000/")
+    print(f"Server running on http://{SERVER_HOST}:{SERVER_PORT}/")
+    log.Logging(f"Server running on http://{SERVER_HOST}:{SERVER_PORT}/")
 
     await site.start()
 

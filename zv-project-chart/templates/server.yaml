@@ -20,17 +20,14 @@ spec:
         image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}"
         ports:
         - containerPort: {{ .Values.server.service.internalPort }}
-        env:
-        - name: SERVER_HOST
-          value: "0.0.0.0"
-        - name: SERVER_PORT
-          value: "{{ .Values.server.service.internalPort }}"
-        - name: REDIS_HOST
-          value: "zv-redis"
-        - name: REDIS_PORT
-          value: "6379"
-        - name: SERVER_LOG
-          value: "/tmp/server.log"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/.env
+          subPath: env-file
+      volumes:
+      - name: config-volume
+        configMap:
+          name: {{ .Release.Name }}-config
 ---
 apiVersion: v1
 kind: Service
