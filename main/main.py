@@ -23,6 +23,7 @@ app.logger.setLevel(logging.INFO)
 load_dotenv()
 
 SERVER_URL = os.getenv("SERVER_URL", "http://zv-project-server:3000")
+print(SERVER_URL)
 
 #LOGGER
 LOGFILE = os.getenv("MAIN_LOG")
