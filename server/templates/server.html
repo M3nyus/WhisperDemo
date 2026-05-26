@@ -6,110 +6,245 @@
 
     <title>Server page</title>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="/static/style.css">
-
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/style.css">
 
     <!-- SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- SocketIO -->
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+    <style>
+    body {
+        min-height: 100vh;
+        margin: 0;
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+        background: url('/static/bg.jpg');
+        background-size: cover;
+        background-position: center;
+        color: white;
+    }
+
+    .app-shell {
+        width: min(1200px, 94vw);
+        margin: 40px auto;
+    }
+
+    .glass-card {
+        background: rgb(76, 108, 253) !important;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+
+        border: 1px solid lightgray;
+
+        border-radius: 24px;
+
+        box-shadow: 0 24px 80px black;
+    }
+
+    .panel {
+        background: gray;
+
+        border: 1px solid slategray;
+
+        border-radius: 18px;
+
+        padding: 18px;
+    }
+
+    .metric-card {
+        background: gray;
+
+        border: 1px solid skyblue;
+
+        border-radius: 18px;
+
+        padding: 18px;
+    }
+
+    .metric-value {
+        font-size: 42px;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .metric-label {
+        color: lightgray;
+        font-size: 14px;
+    }
+
+    .form-control {
+        background: lightgray;
+
+        border: 1px solid slategray;
+
+        color: white;
+
+        border-radius: 12px;
+
+        padding: 12px 14px;
+    }
+
+    .btn {
+        border-radius: 12px;
+        padding: 10px 16px;
+        font-weight: 700;
+    }
+
+    .console-box {
+        background: black;
+
+        border: 1px solid slategray;
+
+        border-radius: 16px;
+
+        padding: 14px;
+
+        height: 250px;
+
+        overflow: auto;
+
+        font-family: 'Consolas', monospace;
+
+        font-size: 13px;
+    }
+
+    .worker-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .worker-item {
+        background: black !important;
+
+        border: 1px solid slategray !important;
+
+        border-radius: 12px !important;
+
+        color: whitesmoke !important;
+    }
+
+    .worker-name {
+        font-weight: 700;
+        word-break: break-all;
+    }
+</style>
+
 </head>
 
 <body>
 
-<div class="container py-5">
+<div class="app-shell">
+    <div class="glass-card p-4 p-lg-5">
 
-    <div class="glass-card text-blue shadow-lg border-0 rounded-4">
-        <div class="card-body p-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <div>
+                <h1 class="mb-1 fw-bold text-white">Whisper Server Control</h1>
+            </div>
+        </div>
 
-            <h1 class="mb-4">Server page</h1>
+        <div class="row g-4">
 
-            <!-- ROOM ID -->
-            <div class="mb-3">
-                <label for="roomId" class="form-label">Room ID</label>
-                <input type="text"
-                       id="roomId"
-                       class="form-control"
-                       placeholder="Room ID">
+            <div class="col-lg-4">
+                <div class="panel h-100">
+
+                    <h5 class="mb-3 text-white">Room Control</h5>
+
+                    <div class="mb-3">
+                        <label for="roomId" class="form-label text-white">Room ID</label>
+                        <input type="text"
+                               id="roomId"
+                               class="form-control"
+                               placeholder="Enter room ID">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="extraInput" class="form-label text-white">Chunk number</label>
+                        <input type="text"
+                               id="extraInput"
+                               class="form-control"
+                               placeholder="Enter chunk number">
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success" onclick="startRoom()">START ROOM</button>
+                        <button class="btn btn-danger" onclick="stopRoom()">STOP ROOM</button>
+                        <button class="btn btn-primary" onclick="testTranscribe()">TRANSCRIBE TEST</button>
+                    </div>
+
+                </div>
             </div>
 
-            <!-- CHUNKS -->
-            <div class="mb-4">
-                <label for="extraInput" class="form-label">Chunk number</label>
-                <input type="text"
-                       id="extraInput"
-                       class="form-control"
-                       placeholder="Chunk number">
-            </div>
+            <div class="col-lg-8">
 
-            <!-- BUTTONS -->
-            <div class="d-flex flex-wrap gap-2 mb-4">
-                <button class="btn btn-success" onclick="startRoom()">
-                    START
-                </button>
+                <div class="row g-3 mb-4">
 
-                <button class="btn btn-danger" onclick="stopRoom()">
-                    STOP
-                </button>
+                    <div class="col-md-6">
+                        <div class="metric-card h-100">
+                            <div class="metric-label text-white">Available workers</div>
+                            <div id="availableWorkerCount" class="metric-value mt-2 text-white">0</div>
+                        </div>
+                    </div>
 
-                <button class="btn btn-primary" onclick="testTranscribe()">
-                    TRANSCRIBE TEST
-                </button>
-            </div>
+                    <div class="col-md-6">
+                        <div class="metric-card h-100">
+                            <div class="metric-label text-white">Running workers</div>
+                            <div id="runningWorkerCount" class="metric-value mt-2 text-white">0</div>
+                        </div>
+                    </div>
 
-            <!-- LISTS -->
-            <div class="mb-4">
-                <h5>Aviable Worker-s</h5>
-                <ul id="aviableWorkerList" class="list-group">
-                    <li class="list-group-item bg-black text-white">No aviable worker</li>
-                </ul>
-            </div>
+                </div>
 
-            <div class="mb-4">
-                <h5>Running Worker-s</h5>
-                <ul id="runningWorkerList" class="list-group">
-                    <li class="list-group-item bg-black text-white">No Running worker</li>
-                </ul>
-            </div>
+                <div class="panel mb-4">
+                    <h5 class="mb-3 text-white">Available Workers</h5>
 
-            <!-- LOG + SUBTITLE -->
-            <div class="row g-3">
+                    <ul id="aviableWorkerList" class="worker-list list-unstyled mb-0">
+                        <li class="worker-item p-3">
+                            No available worker
+                        </li>
+                    </ul>
+                </div>
 
-                <!-- LOG -->
-                <div class="col-md-6">
+                <div class="panel mb-4">
+                    <h5 class="mb-3 text-white">Running Workers</h5>
+
+                    <ul id="runningWorkerList" class="worker-list list-unstyled mb-0 text-white">
+                        <li class="worker-item p-3 text-white">
+                            No running worker
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="panel mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h5 class="mb-0">Log</h5>
+                        <h5 class="mb-0 text-white">Subtitle</h5>
+                    </div>
 
-                        <button class="btn btn-sm btn-outline-dark" onclick="clearLog()">
+                    <div id="subtitleBox" class="console-box text-white" style="height:300px;"></div>
+                </div>
+
+                <div class="panel">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0 text-white">Log</h5>
+
+                        <button class="btn btn-sm btn-outline-light" onclick="clearLog()">
                             Clear log
                         </button>
                     </div>
 
-                    <div id="log"
-                         class="p-3 rounded"
-                         style="height:250px; overflow:auto;">
-                    </div>
-                </div>
-
-                <!-- SUBTITLE -->
-                <div class="col-md-6">
-                    <h5 class="mb-2">Subtitle</h5>
-
-                    <div id="subtitleBox"
-                         class="rounded"
-                         style="height:300px; overflow:auto;">
-                    </div>
+                    <div id="log" class="console-box text-white"></div>
                 </div>
 
             </div>
 
         </div>
-    </div>
 
+    </div>
 </div>
 
 <script>

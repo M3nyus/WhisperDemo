@@ -80,17 +80,15 @@ class AudioToRedisTrack(AudioStreamTrack):
             self.buffer.append(tomb_bytes)
             eltelt = time.time() - self.startTime
             chunk = int(int(eltelt) // 10)
-            # self.currChunk = chunk
+
             tomb64 = base64.b64encode(b"".join(self.buffer)).decode()
             redisKey = f"{self.roomId}:{chunk}"
-            #print('redisKey',redisKey)
-            # mark:0
+
             self.redis.xadd(redisKey, {"pcm": tomb64})
             self.redis.set("room_id", self.roomId)
 
             self.redis.set(f"{self.roomId}_actual", redisKey)
             self.log.Logging("Data into Redis.")
-            #print(f"uj 10s chunk {chunk} ment be {len(self.buffer)} frame")
             self.buffer = []
 
         return frame

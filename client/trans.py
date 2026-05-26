@@ -29,7 +29,7 @@ WHISPER_MODEL = os.getenv("WHISPER_MODEL")
 def transcribe_from_redis_stream(room_id, chunk_index):
     # Connect to Redis (decode_responses=True helps with the dictionary keys)
     r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
-    log.Logging("Redis connected. HOST=localhost, PORT=6379")
+    log.Logging(f"Redis connected. HOST={REDIS_HOST}, PORT={REDIS_PORT}")
 
     # Load the Turbo model (v3-turbo is very fast for live-ish data)
     model = whisper.load_model(WHISPER_MODEL)
