@@ -302,21 +302,26 @@ socket.on("subtitle", (data) => {
 
 socket.on("worker_list", (data) => {
     const list = document.getElementById("runningWorkerList");
+    const countBox = document.getElementById("runningWorkerCount");
+
+    const workers = data.workers || [];
+
+    countBox.innerText = workers.length;
     list.innerHTML = "";
 
-    if (!data.workers || data.workers.length === 0) {
+    if (workers.length === 0) {
         list.innerHTML = `
-            <li class="list-group-item bg-black text-white">
+            <li class="worker-item p-3 text-white">
                 Nincs futó worker
             </li>
         `;
         return;
     }
 
-    data.workers.forEach((worker) => {
+    workers.forEach((worker) => {
         list.innerHTML += `
-            <li class="list-group-item bg-black text-success d-flex justify-content-between align-items-center">
-                <span>${worker}</span>
+            <li class="worker-item p-3 d-flex justify-content-between align-items-center">
+                <span class="worker-name text-success">${worker}</span>
 
                 <a class="btn btn-sm btn-primary"
                    href="/client/${worker}"
@@ -330,21 +335,26 @@ socket.on("worker_list", (data) => {
 
 socket.on("available_worker_list", (data) => {
     const list = document.getElementById("aviableWorkerList");
+    const countBox = document.getElementById("availableWorkerCount");
+
+    const workers = data.workers || [];
+
+    countBox.innerText = workers.length;
     list.innerHTML = "";
 
-    if (!data.workers || data.workers.length === 0) {
+    if (workers.length === 0) {
         list.innerHTML = `
-            <li class="list-group-item bg-black text-white">
-                No aviable worker
+            <li class="worker-item p-3 text-white">
+                No available worker
             </li>
         `;
         return;
     }
 
-    data.workers.forEach((worker) => {
+    workers.forEach((worker) => {
         list.innerHTML += `
-            <li class="list-group-item bg-black text-info d-flex justify-content-between align-items-center">
-                <span>${worker.workerId}</span>
+            <li class="worker-item p-3 d-flex justify-content-between align-items-center">
+                <span class="worker-name text-info">${worker.workerId}</span>
 
                 <button class="btn btn-sm btn-danger"
                         onclick="shutdownWorker('${worker.sid}')">
