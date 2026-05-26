@@ -21,119 +21,102 @@
 
 <body>
 
-<div class="container py-5">
-    <div class="glass-card text-white shadow-lg border-0 rounded-4">
-        <div class="card-body p-4">
+<div class="app-shell">
+    <div class="glass-card p-4 p-lg-5">
 
-            <h1 class="mb-4">User Page</h1>
-
-            <!-- ROOM ID -->
-            <div class="mb-3">
-                <label for="roomId" class="form-label">Room ID</label>
-                <input type="text"
-                       id="roomId"
-                       class="form-control"
-                       placeholder="Room name"
-                       oninput="refreshChunkCount()">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <div>
+                <h1 class="mb-1 fw-bold text-white">Whisper Room Control</h1>
             </div>
 
-            <!-- CHUNK NUMBER -->
-            <div class="mb-3">
-                <label for="chunkNumber" class="form-label">Chunk number</label>
-                <input type="text"
-                       id="chunkNumber"
-                       class="form-control"
-                       placeholder="Chunk number">
+
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-lg-4">
+                <div class="panel h-100">
+
+                    <h5 class="mb-3 text-white">Room Control</h5>
+
+                    <div class="mb-3">
+                        <label for="roomId" class="form-label text-white">Room ID</label>
+                        <input type="text"
+                               id="roomId"
+                               class="form-control"
+                               placeholder="Enter room name"
+                               oninput="refreshChunkCount()">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="chunkNumber" class="form-label text-white">Chunk number</label>
+                        <input type="text"
+                               id="chunkNumber"
+                               class="form-control"
+                               placeholder="Enter chunk number">
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success" onclick="startBot()">START ROOM</button>
+                        <button class="btn btn-danger" onclick="stopBot()">STOP ROOM</button>
+                        <button class="btn btn-primary" onclick="getStatus()">STATUS</button>
+                        <button class="btn btn-info text-white" onclick="transcribeTest()">TRANSCRIBE TEST</button>
+                    </div>
+
+                </div>
             </div>
 
-            <!-- LISTS -->
-            <div class="mb-4">
-                <div class="p-3 rounded bg-black text-white d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="mb-1">Aviable chunk-s</h6>
+            <div class="col-lg-8">
+                <div class="row g-3 mb-4">
 
-                        <small>Aviable chunk-s for this room</small>
-
-                        <div id="chunkList" class="small text-white-50 mt-2">
-                            -
+                    <div class="col-md-6">
+                        <div class="metric-card h-100">
+                            <div class="metric-label text-white">Available chunks</div>
+                            <div id="chunkCount" class="metric-value mt-2 text-white">0</div>
+                            <div id="chunkList" class="small text-white mt-2">-</div>
                         </div>
                     </div>
 
-                    <div id="chunkCount"
-                         class="fs-1 fw-bold">
-                        0
-                    </div>
-                </div>
-            </div>
-
-            <div class="mb-4">
-                <div class="p-3 rounded bg-black text-white d-flex justify-content-between align-items-center">
-                    <div>
-                        <h4 class="mb-1">Aviable worker-s</h4>
+                    <div class="col-md-6">
+                        <div class="metric-card h-100">
+                            <div class="metric-label text-white">Available workers</div>
+                            <div id="availableWorkerCount" class="metric-value mt-2 text-white">0</div>
+                        </div>
                     </div>
 
-                    <div id="availableWorkerCount"
-                         class="fs-1 fw-bold">
-                        0
+                </div>
+
+                <div class="panel mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0 text-white">Subtitle</h5>
+                    </div>
+
+                    <div id="subtitleBox" class="console-box text-white"></div>
+                </div>
+
+                <div class="panel mb-4">
+                    <h5 class="mb-2 text-white">Status</h5>
+
+                    <div id="statusBox" class="console-box" style="min-height: 90px; height: auto;">
+                        No status yet
                     </div>
                 </div>
-            </div>
 
-            <!-- BUTTONS -->
-            <div class="d-flex flex-wrap gap-2 mb-4">
-                <button class="btn btn-success" onclick="startBot()">
-                    START
-                </button>
+                <div class="panel">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0 text-white">Log</h5>
 
-                <button class="btn btn-danger" onclick="stopBot()">
-                    STOP
-                </button>
+                        <button class="btn btn-sm btn-outline-light" onclick="clearLog()">
+                            Clear log
+                        </button>
+                    </div>
 
-                <button class="btn btn-primary" onclick="getStatus()">
-                    STATUS
-                </button>
-
-                <button class="btn btn-primary" onclick="transcribeTest()">
-                    TRANSCRIBE TEST
-                </button>
-            </div>
-
-            <!-- SUBTITLE -->
-            <div class="mt-4">
-                <h5>Subtitle</h5>
-                <div id="subtitleBox"
-                     class="text-white p-3 rounded"
-                     style="height:250px; overflow:auto;">
-                </div>
-            </div>
-
-            <!-- STATUS -->
-            <div class="mb-4">
-                <h5>Status</h5>
-                <div id="statusBox"
-                     class="bg-black text-white p-3 rounded"
-                     style="min-height:80px;">
-                    No status yet
-                </div>
-            </div>
-
-            <!-- LOG -->
-            <div class="col-md-6">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h5 class="mb-0">Log</h5>
-
-                    <button class="btn btn-sm btn-outline-dark" onclick="clearLog()">
-                        Clear log
-                    </button>
-                </div>
-
-                <div id="log"
-                     class="p-3 rounded"
-                     style="height:250px; overflow:auto;">
+                    <div id="log" class="console-box text-white"></div>
                 </div>
             </div>
 
         </div>
+
     </div>
 </div>
 

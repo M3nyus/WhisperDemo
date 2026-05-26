@@ -1,56 +1,91 @@
 body {
-    background-image: url('/static/bg.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    min-height: 100vh;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Segoe UI', sans-serif;
-}
-
-.glass-card {
-    background: rgba(27, 27, 27, 0.55) !important;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-}
-
-.form-control {
-    background: #222;
-    border: 1px solid #444;
-    color: white;
-}
-
-.form-control:focus {
-    background: #222;
-    color: white;
-    border-color: #0d6efd;
-    box-shadow: none;
-}
-
-#log {
-    font-family: monospace;
-    color: white;
-}
-
-#subtitleBox {
-    color: white;
-}
-
-.subtitle-item {
-    animation: subtitleFadeIn 0.25s ease;
-}
-
-@keyframes subtitleFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
+        min-height: 100vh;
+        margin: 0;
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+        background: url('/static/bg.jpg');
+        background-size: cover;
+        background-position: center;
+        color: white;
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    .app-shell {
+        width: min(1200px, 94vw);
+        margin: 40px auto;
     }
-}
+
+    .glass-card {
+        background: rgb(76, 108, 253) !important;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid lightgray;
+        border-radius: 24px;
+        box-shadow: 0 24px 80px black;
+    }
+
+    .panel {
+        background: gray;
+        border: 1px solid slategray;
+        border-radius: 18px;
+        padding: 18px;
+    }
+
+    .metric-card {
+        background: gray;
+        border: 1px solid skyblue;
+        border-radius: 18px;
+        padding: 18px;
+    }
+
+    .metric-value {
+        font-size: 42px;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .metric-label {
+        color: lightgray;
+        font-size: 14px;
+    }
+
+    .form-control {
+        background: lightgray;
+        border: 1px solid slategray;
+        color: white;
+        border-radius: 12px;
+        padding: 12px 14px;
+    }
+
+    .btn {
+        border-radius: 12px;
+        padding: 10px 16px;
+        font-weight: 700;
+    }
+
+    .console-box {
+        background: black;
+        border: 1px solid slategray;
+        border-radius: 16px;
+        padding: 14px;
+        height: 250px;
+        overflow: auto;
+        font-family: 'Consolas', monospace;
+        font-size: 13px;
+    }
+
+    .worker-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .worker-item {
+        background: black !important;
+        border: 1px solid slategray !important;
+        border-radius: 12px !important;
+        color: whitesmoke !important;
+    }
+
+    .worker-name {
+        font-weight: 700;
+        word-break: break-all;
+    }
